@@ -1,0 +1,67 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
+class APIConfig {
+  static String xfSTTUrl = 'https://raasr.xfyun.cn/v2/api';
+  static String xfAppId = '';
+  static String xfApiSecret = '';
+  static String aiApiEndpoint = "https://api.ppinfra.com/v3/openai";
+  static String aiModelName = '';
+  static String aiApiKey = '';
+
+  // SharedPreferences 键名
+  static const String _keyXfSTTUrl = 'xf_stt_url';
+  static const String _keyXfAppId = 'xf_app_id';
+  static const String _keyXfApiSecret = 'xf_api_secret';
+  static const String _keyAiApiEndpoint = 'ai_api_endpoint';
+  static const String _keyAiModelName = 'ai_model_name';
+  static const String _keyAiApiKey = 'ai_api_key';
+
+  // 从 SharedPreferences 加载配置
+  static Future<void> loadConfig() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    xfSTTUrl = prefs.getString(_keyXfSTTUrl) ?? xfSTTUrl;
+    xfAppId = prefs.getString(_keyXfAppId) ?? xfAppId;
+    xfApiSecret = prefs.getString(_keyXfApiSecret) ?? xfApiSecret;
+    aiApiEndpoint = prefs.getString(_keyAiApiEndpoint) ?? aiApiEndpoint;
+    aiModelName = prefs.getString(_keyAiModelName) ?? aiModelName;
+    aiApiKey = prefs.getString(_keyAiApiKey) ?? aiApiKey;
+  }
+
+  // 更新并保存配置
+  static Future<void> updateConfig({
+    String? xfSTTUrl,
+    String? xfAppId,
+    String? xfApiSecret,
+    String? aiApiEndpoint,
+    String? aiModelName,
+    String? aiApiKey,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (xfSTTUrl != null) {
+      APIConfig.xfSTTUrl = xfSTTUrl;
+      await prefs.setString(_keyXfSTTUrl, xfSTTUrl);
+    }
+    if (xfAppId != null) {
+      APIConfig.xfAppId = xfAppId;
+      await prefs.setString(_keyXfAppId, xfAppId);
+    }
+    if (xfApiSecret != null) {
+      APIConfig.xfApiSecret = xfApiSecret;
+      await prefs.setString(_keyXfApiSecret, xfApiSecret);
+    }
+    if (aiApiEndpoint != null) {
+      APIConfig.aiApiEndpoint = aiApiEndpoint;
+      await prefs.setString(_keyAiApiEndpoint, aiApiEndpoint);
+    }
+    if (aiModelName != null) {
+      APIConfig.aiModelName = aiModelName;
+      await prefs.setString(_keyAiModelName, aiModelName);
+    }
+    if (aiApiKey != null) {
+      APIConfig.aiApiKey = aiApiKey;
+      await prefs.setString(_keyAiApiKey, aiApiKey);
+    }
+  }
+}
