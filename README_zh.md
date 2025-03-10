@@ -20,6 +20,13 @@
 - Android Studio / VS Code
 - iOS 开发环境 (用于 iOS 构建)
 
+<div style="display: flex; justify-content: space-between;">
+  <img src="assets/screenshot/Screenshot-01.png" width="24%">
+  <img src="assets/screenshot/Screenshot-02.png" width="24%">
+  <img src="assets/screenshot/Screenshot-03.png" width="24%">
+  <img src="assets/screenshot/Screenshot-04.png" width="24%">
+</div>
+
 ### API 配置文件
 ```bash
 cp lib/config/api_config.dart.example lib/config/api_config.dart

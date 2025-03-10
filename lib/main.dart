@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/meeting_form_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/api_config_screen.dart';
-import '../config/api_config.dart';
+import 'config/api_config.dart.example';
 import 'screens/meeting_list_screen.dart';
 import 'screens/new_meeting_screen.dart';
 

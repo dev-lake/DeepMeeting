@@ -11,6 +11,13 @@ An AI-powered meeting assistant application.
 - Real-time speech-to-text
 - Multi-language support
 
+<div style="display: flex; justify-content: space-between;">
+  <img src="assets/screenshot/Screenshot-01.png" width="24%">
+  <img src="assets/screenshot/Screenshot-02.png" width="24%">
+  <img src="assets/screenshot/Screenshot-03.png" width="24%">
+  <img src="assets/screenshot/Screenshot-04.png" width="24%">
+</div>
+
 ## Development Environment Setup
 
 ### Prerequisites
