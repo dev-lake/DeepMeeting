@@ -26,7 +26,7 @@ jobs:
           flutter-version: "3.29.0"
           channel: "stable"
       - name: Init Config
-        run: lib/config/api_config.dart.example lib/config/api_config.dart
+        run: mv lib/config/api_config.dart.example lib/config/api_config.dart
       - name: Install Dependencies
         run: flutter pub get
       - name: Build APK
