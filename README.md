@@ -16,6 +16,7 @@ An AI-powered meeting assistant application.
   <img src="assets/screenshot/Screenshot-02.png" width="24%">
   <img src="assets/screenshot/Screenshot-03.png" width="24%">
   <img src="assets/screenshot/Screenshot-04.png" width="24%">
+  <img src="assets/screenshot/Screenshot-05.png" width="24%">
 </div>
 
 ## Development Environment Setup
