@@ -10,6 +10,23 @@
 - 智能会议总结
 - 实时语音转文字
 - 多语言支持
+<div style="display: flex; justify-content: space-between;">
+  <img src="assets/screenshot/Screenshot-01.png" width="24%">
+  <img src="assets/screenshot/Screenshot-02.png" width="24%">
+  <img src="assets/screenshot/Screenshot-03.png" width="24%">
+  <img src="assets/screenshot/Screenshot-04.png" width="24%">
+  <img src="assets/screenshot/Screenshot-05.png" width="24%">
+</div>
+
+## TODO
+[ ] 添加转录原文的存储和展示
+[ ] 添加腾讯云、Google STT API
+[ ] 添加实时语音识别 API
+[ ] 添加会议场景的自动识别和手动选项，如政治会议、商务会议、教学课堂等。
+[ ] 优化思考过程的等待进度显示
+[ ] 添加锁屏录音、后台转换支持
+[ ] 添加多语言支持
+[ ] 添加夜间模式支持
 
 ## 开发环境配置
 
@@ -19,14 +36,6 @@
 - Dart SDK
 - Android Studio / VS Code
 - iOS 开发环境 (用于 iOS 构建)
-
-<div style="display: flex; justify-content: space-between;">
-  <img src="assets/screenshot/Screenshot-01.png" width="24%">
-  <img src="assets/screenshot/Screenshot-02.png" width="24%">
-  <img src="assets/screenshot/Screenshot-03.png" width="24%">
-  <img src="assets/screenshot/Screenshot-04.png" width="24%">
-  <img src="assets/screenshot/Screenshot-05.png" width="24%">
-</div>
 
 ### API 配置文件
 ```bash

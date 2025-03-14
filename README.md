@@ -19,6 +19,16 @@ An AI-powered meeting assistant application.
   <img src="assets/screenshot/Screenshot-05.png" width="24%">
 </div>
 
+## TODO
+[ ] Add storage and display of original transcription
+[ ] Add Tencent Cloud, Google STT API
+[ ] Add real-time speech recognition API
+[ ] Add automatic recognition and manual options for meeting scenarios, such as political meetings, business meetings, classroom teaching, etc.
+[ ] Optimize the progress display during the thinking process
+[ ] Add support for recording while locked and background conversion
+[ ] Add multilingual support
+[ ] Add night mode support
+
 ## Development Environment Setup
 
 ### Prerequisites
