@@ -12,22 +12,22 @@ An AI-powered meeting assistant application.
 - Multi-language support
 
 <div style="display: flex; justify-content: space-between;">
-  <img src="assets/screenshot/Screenshot-01.png" width="24%">
-  <img src="assets/screenshot/Screenshot-02.png" width="24%">
-  <img src="assets/screenshot/Screenshot-03.png" width="24%">
-  <img src="assets/screenshot/Screenshot-04.png" width="24%">
-  <img src="assets/screenshot/Screenshot-05.png" width="24%">
+  <img src="assets/screenshot/Screenshot-01.png" width="20%">
+  <img src="assets/screenshot/Screenshot-02.png" width="20%">
+  <img src="assets/screenshot/Screenshot-03.png" width="20%">
+  <img src="assets/screenshot/Screenshot-04.png" width="20%">
+  <img src="assets/screenshot/Screenshot-05.png" width="20%">
 </div>
 
 ## TODO
-[ ] Add storage and display of original transcription
-[ ] Add Tencent Cloud, Google STT API
-[ ] Add real-time speech recognition API
-[ ] Add automatic recognition and manual options for meeting scenarios, such as political meetings, business meetings, classroom teaching, etc.
-[ ] Optimize the progress display during the thinking process
-[ ] Add support for recording while locked and background conversion
-[ ] Add multilingual support
-[ ] Add night mode support
+- [ ] Add storage and display of original transcription
+- [ ] Add Tencent Cloud, Google STT API
+- [ ] Add real-time speech recognition API
+- [ ] Add automatic recognition and manual options for meeting scenarios, such as political meetings, business meetings, classroom teaching, etc.
+- [ ] Optimize the progress display during the thinking process
+- [ ] Add support for recording while locked and background conversion
+- [ ] Add multilingual support
+- [ ] Add night mode support
 
 ## Development Environment Setup
 
