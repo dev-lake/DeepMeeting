@@ -8,10 +8,12 @@ import '../widgets/loading_overlay.dart';
 
 class MeetingFormScreen extends StatefulWidget {
   final String? audioPath;
+  final Meeting? initialMeeting;
 
   const MeetingFormScreen({
     super.key,
     this.audioPath,
+    this.initialMeeting,
   });
 
   @override
@@ -21,7 +23,7 @@ class MeetingFormScreen extends StatefulWidget {
 class _MeetingFormScreenState extends State<MeetingFormScreen> {
   final pageTitle = 'DeepMeeting';
   final _formKey = GlobalKey<FormState>();
-  final Meeting _meeting = Meeting();
+  late Meeting _meeting;
   String? _audioPath;
   final TextEditingController _attendeeController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
@@ -30,13 +32,19 @@ class _MeetingFormScreenState extends State<MeetingFormScreen> {
   final List<String> _attendees = [];
   DateTime _selectedDateTime = DateTime.now();
   int _durationInMinutes = 60; // 默认时长1小时
+  bool _hasProcessedContent = false;
 
   @override
   void initState() {
     super.initState();
+    _meeting = widget.initialMeeting ?? Meeting();
+
     if (widget.audioPath != null) {
       _audioPath = widget.audioPath;
     }
+
+    _hasProcessedContent = widget.initialMeeting?.content.isNotEmpty ?? false;
+
     _timeController.text = _formatDateTime(_selectedDateTime);
     _durationController.text = '1小时';
     _updateEndTime();
@@ -425,6 +433,9 @@ class _MeetingFormScreenState extends State<MeetingFormScreen> {
 
       // 调用讯飞语音转写API
       final text = await XFService().convertAudioToText(_audioPath!);
+
+      // 保存转录原文
+      _meeting.transcription = text;
 
       // 更新状态为开始生成会议纪要
       LoadingOverlay.show(

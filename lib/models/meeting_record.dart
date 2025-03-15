@@ -12,6 +12,7 @@ class MeetingRecord {
   final String audioPath;
   final String content;
   final DateTime createdAt;
+  final String transcription;
 
   MeetingRecord({
     this.id,
@@ -25,6 +26,7 @@ class MeetingRecord {
     required this.audioPath,
     required this.content,
     DateTime? createdAt,
+    this.transcription = '',
   }) : createdAt = createdAt ?? DateTime.now();
 
   Map<String, dynamic> toMap() {
@@ -40,6 +42,7 @@ class MeetingRecord {
       'audioPath': audioPath,
       'content': content,
       'createdAt': createdAt.toIso8601String(),
+      'transcription': transcription,
     };
   }
 
@@ -56,6 +59,7 @@ class MeetingRecord {
       audioPath: map['audioPath'] as String,
       content: map['content'] as String,
       createdAt: DateTime.parse(map['createdAt'] as String),
+      transcription: map['transcription'] as String? ?? '',
     );
   }
 }

@@ -10,9 +10,14 @@ import 'dart:io';
 class MeetingSummaryScreen extends StatefulWidget {
   final Meeting meeting;
   final String? audioPath;
+  final bool isReadOnly;
 
-  const MeetingSummaryScreen(
-      {super.key, required this.meeting, this.audioPath});
+  const MeetingSummaryScreen({
+    super.key,
+    required this.meeting,
+    this.audioPath,
+    this.isReadOnly = false,
+  });
 
   @override
   State<MeetingSummaryScreen> createState() => _MeetingSummaryScreenState();
@@ -22,13 +27,17 @@ class _MeetingSummaryScreenState extends State<MeetingSummaryScreen> {
   final _audioPlayer = AudioPlayer();
   bool _isLoading = true;
   String? _errorMessage;
+  bool _showTranscription = false;
 
-  void _copyToClipboard(BuildContext context) {
-    Clipboard.setData(ClipboardData(text: widget.meeting.content)).then((_) {
+  void _copyToClipboard(BuildContext context, {bool transcription = false}) {
+    final textToCopy =
+        transcription ? widget.meeting.transcription : widget.meeting.content;
+
+    Clipboard.setData(ClipboardData(text: textToCopy)).then((_) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('内容已复制到剪贴板'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(transcription ? '转录原文已复制到剪贴板' : '内容已复制到剪贴板'),
+          duration: const Duration(seconds: 2),
         ),
       );
     });
@@ -52,6 +61,7 @@ class _MeetingSummaryScreenState extends State<MeetingSummaryScreen> {
       reviewer: widget.meeting.reviewer,
       audioPath: widget.audioPath!,
       content: widget.meeting.content,
+      transcription: widget.meeting.transcription,
     );
 
     try {
@@ -117,12 +127,22 @@ class _MeetingSummaryScreenState extends State<MeetingSummaryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('会议纪要预览'),
+        title: Text(_showTranscription ? '会议转录原文' : '会议纪要预览'),
         actions: [
+          IconButton(
+            icon: Icon(_showTranscription ? Icons.summarize : Icons.subject),
+            tooltip: _showTranscription ? '查看摘要' : '查看转录原文',
+            onPressed: () {
+              setState(() {
+                _showTranscription = !_showTranscription;
+              });
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.share),
             tooltip: '复制内容',
-            onPressed: () => _copyToClipboard(context),
+            onPressed: () =>
+                _copyToClipboard(context, transcription: _showTranscription),
           ),
           IconButton(
             icon: const Icon(Icons.save),
@@ -146,87 +166,29 @@ class _MeetingSummaryScreenState extends State<MeetingSummaryScreen> {
                         color: Theme.of(context).colorScheme.surfaceVariant,
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      child: _isLoading
-                          ? const Center(child: CircularProgressIndicator())
-                          : _errorMessage != null
-                              ? Text(_errorMessage!,
-                                  style: TextStyle(color: Colors.red))
-                              : Row(
-                                  children: [
-                                    StreamBuilder<PlayerState>(
-                                      stream: _audioPlayer.playerStateStream,
-                                      builder: (context, snapshot) {
-                                        final playing =
-                                            snapshot.data?.playing ?? false;
-                                        return IconButton(
-                                          icon: Icon(playing
-                                              ? Icons.pause
-                                              : Icons.play_arrow),
-                                          onPressed: () {
-                                            if (playing) {
-                                              _audioPlayer.pause();
-                                            } else {
-                                              _audioPlayer.play();
-                                            }
-                                          },
-                                        );
-                                      },
-                                    ),
-                                    Expanded(
-                                      child: StreamBuilder<Duration>(
-                                        stream: _audioPlayer.positionStream,
-                                        builder: (context, snapshot) {
-                                          final position =
-                                              snapshot.data ?? Duration.zero;
-                                          final duration =
-                                              _audioPlayer.duration ??
-                                                  Duration.zero;
-                                          return Slider(
-                                            value: position.inMilliseconds
-                                                .toDouble(),
-                                            max: duration.inMilliseconds
-                                                .toDouble(),
-                                            onChanged: (value) {
-                                              _audioPlayer.seek(Duration(
-                                                  milliseconds: value.toInt()));
-                                            },
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    StreamBuilder<Duration>(
-                                      stream: _audioPlayer.positionStream,
-                                      builder: (context, snapshot) {
-                                        final position =
-                                            snapshot.data ?? Duration.zero;
-                                        final duration =
-                                            _audioPlayer.duration ??
-                                                Duration.zero;
-                                        return Text(
-                                          '${position.toString().split('.').first} / ${duration.toString().split('.').first}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall,
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
+                      child: _buildAudioPlayer(),
                     ),
                   SizedBox(
                     width: constraints.maxWidth,
                     height: constraints.maxHeight - 32.0,
-                    child: Markdown(
-                      data: widget.meeting.content,
-                      selectable: true,
-                      styleSheet: MarkdownStyleSheet(
-                        h1: Theme.of(context).textTheme.headlineMedium,
-                        h2: Theme.of(context).textTheme.titleLarge,
-                        h3: Theme.of(context).textTheme.titleMedium,
-                        p: Theme.of(context).textTheme.bodyLarge,
-                        listBullet: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ),
+                    child: _showTranscription
+                        ? SingleChildScrollView(
+                            child: SelectableText(
+                              widget.meeting.transcription,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          )
+                        : Markdown(
+                            data: widget.meeting.content,
+                            selectable: true,
+                            styleSheet: MarkdownStyleSheet(
+                              h1: Theme.of(context).textTheme.headlineMedium,
+                              h2: Theme.of(context).textTheme.titleLarge,
+                              h3: Theme.of(context).textTheme.titleMedium,
+                              p: Theme.of(context).textTheme.bodyLarge,
+                              listBullet: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ),
                   ),
                 ],
               ),
@@ -234,6 +196,64 @@ class _MeetingSummaryScreenState extends State<MeetingSummaryScreen> {
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildAudioPlayer() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_errorMessage != null) {
+      return Text(_errorMessage!, style: const TextStyle(color: Colors.red));
+    }
+
+    return Row(
+      children: [
+        StreamBuilder<PlayerState>(
+          stream: _audioPlayer.playerStateStream,
+          builder: (context, snapshot) {
+            final playing = snapshot.data?.playing ?? false;
+            return IconButton(
+              icon: Icon(playing ? Icons.pause : Icons.play_arrow),
+              onPressed: () {
+                if (playing) {
+                  _audioPlayer.pause();
+                } else {
+                  _audioPlayer.play();
+                }
+              },
+            );
+          },
+        ),
+        Expanded(
+          child: StreamBuilder<Duration>(
+            stream: _audioPlayer.positionStream,
+            builder: (context, snapshot) {
+              final position = snapshot.data ?? Duration.zero;
+              final duration = _audioPlayer.duration ?? Duration.zero;
+              return Slider(
+                value: position.inMilliseconds.toDouble(),
+                max: duration.inMilliseconds.toDouble(),
+                onChanged: (value) {
+                  _audioPlayer.seek(Duration(milliseconds: value.toInt()));
+                },
+              );
+            },
+          ),
+        ),
+        StreamBuilder<Duration>(
+          stream: _audioPlayer.positionStream,
+          builder: (context, snapshot) {
+            final position = snapshot.data ?? Duration.zero;
+            final duration = _audioPlayer.duration ?? Duration.zero;
+            return Text(
+              '${position.toString().split('.').first} / ${duration.toString().split('.').first}',
+              style: Theme.of(context).textTheme.bodySmall,
+            );
+          },
+        ),
+      ],
     );
   }
 

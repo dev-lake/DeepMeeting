@@ -55,6 +55,30 @@ class _MeetingListScreenState extends State<MeetingListScreen> {
     }
   }
 
+  void _viewMeetingDetails(MeetingRecord record) {
+    // 创建会议对象并填充数据
+    final meeting = Meeting();
+    meeting.attendees = record.attendees;
+    meeting.meetingTime = record.meetingTime;
+    meeting.duration = record.duration;
+    meeting.meetingEndTime = record.meetingEndTime;
+    meeting.recorder = record.recorder;
+    meeting.reviewer = record.reviewer;
+    meeting.content = record.content;
+    meeting.transcription = record.transcription; // 添加转录原文
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MeetingSummaryScreen(
+          meeting: meeting,
+          audioPath: record.audioPath,
+          isReadOnly: true, // 标记为只读模式
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,24 +186,7 @@ class _MeetingListScreenState extends State<MeetingListScreen> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
                     onTap: () {
-                      final meetingData = Meeting()
-                        ..attendees = meeting.attendees
-                        ..meetingTime = meeting.meetingTime
-                        ..duration = meeting.duration
-                        ..meetingEndTime = meeting.meetingEndTime
-                        ..recorder = meeting.recorder
-                        ..reviewer = meeting.reviewer
-                        ..content = meeting.content;
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MeetingSummaryScreen(
-                            meeting: meetingData,
-                            audioPath: meeting.audioPath,
-                          ),
-                        ),
-                      );
+                      _viewMeetingDetails(meeting);
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(16),

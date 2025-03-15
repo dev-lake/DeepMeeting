@@ -6,4 +6,5 @@ class Meeting {
   String recorder = '';
   String reviewer = '';
   String content = '';
+  String transcription = '';
 }

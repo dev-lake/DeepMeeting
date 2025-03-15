@@ -22,8 +22,9 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _upgradeDB,
     );
   }
 
@@ -40,9 +41,17 @@ class DatabaseHelper {
         reviewer TEXT NOT NULL,
         audioPath TEXT NOT NULL,
         content TEXT NOT NULL,
+        transcription TEXT NOT NULL,
         createdAt TEXT NOT NULL
       )
     ''');
+  }
+
+  Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute(
+          'ALTER TABLE meetings ADD COLUMN transcription TEXT DEFAULT ""');
+    }
   }
 
   Future<String> _copyAudioFile(String originalPath) async {
@@ -76,6 +85,7 @@ class DatabaseHelper {
       reviewer: meeting.reviewer,
       audioPath: newAudioPath,
       content: meeting.content,
+      transcription: meeting.transcription,
     );
 
     return await db.insert('meetings', meetingWithNewPath.toMap());

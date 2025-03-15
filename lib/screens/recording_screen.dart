@@ -4,6 +4,10 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'meeting_form_screen.dart';
 import 'dart:async';
+import '../widgets/loading_overlay.dart';
+import '../services/xf_service.dart';
+import '../services/deepseek_service.dart';
+import '../models/meeting.dart';
 
 class RecordingScreen extends StatefulWidget {
   const RecordingScreen({super.key});
@@ -160,12 +164,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
       });
 
       if (path != null && mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MeetingFormScreen(audioPath: path),
-          ),
-        );
+        await _processRecording(path);
       }
     } catch (e) {
       if (mounted) {
@@ -176,12 +175,112 @@ class _RecordingScreenState extends State<RecordingScreen> {
     }
   }
 
+  Future<void> _processRecording(String audioPath) async {
+    try {
+      // 显示加载状态
+      LoadingOverlay.show(
+        context,
+        status: '准备处理录音...',
+        progress: 0.0,
+      );
+
+      // 更新状态为开始语音转写
+      LoadingOverlay.show(
+        context,
+        status: '正在转写录音内容...',
+        progress: 0.3,
+      );
+
+      // 调用讯飞语音转写API
+      final text = await XFService().convertAudioToText(audioPath);
+
+      // 创建会议对象并保存转录原文
+      final meeting = Meeting();
+      meeting.transcription = text;
+
+      // 更新状态为开始生成会议纪要
+      LoadingOverlay.show(
+        context,
+        status: '正在生成会议纪要...',
+        progress: 0.6,
+      );
+
+      // 构建提示词
+      final prompt = _buildPrompt(text);
+
+      // 调用DeepSeek API生成摘要
+      var summary = await DeepseekService().generate(prompt);
+
+      // 移除<think></think>标签及其内容
+      summary = _removeThinkTags(summary);
+
+      meeting.content = summary;
+
+      // 更新状态为完成
+      LoadingOverlay.show(
+        context,
+        status: '处理完成！',
+        progress: 1.0,
+      );
+
+      // 短暂延迟以显示完成状态
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // 隐藏加载动画
+      LoadingOverlay.hide();
+
+      // 导航到会议表单页面
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MeetingFormScreen(
+              audioPath: audioPath,
+              initialMeeting: meeting, // 传递包含转录原文的会议对象
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      // 错误处理...
+    }
+  }
+
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final hours = twoDigits(duration.inHours);
     final minutes = twoDigits(duration.inMinutes.remainder(60));
     final seconds = twoDigits(duration.inSeconds.remainder(60));
     return '$hours:$minutes:$seconds';
+  }
+
+  String _buildPrompt(String transcription) {
+    final StringBuffer prompt = StringBuffer();
+
+    // 添加系统指令
+    prompt.writeln('你是一个专业的会议纪要整理助手。请根据以下会议内容，生成一份结构化的会议纪要。');
+
+    prompt.writeln('\n会议内容：');
+    prompt.writeln(transcription);
+
+    prompt.writeln('\n请按照以下格式生成会议纪要：');
+    prompt.writeln('1. 会议主题（根据内容提炼）');
+    prompt.writeln('2. 会议要点（列出3-5个重要讨论要点）');
+    prompt.writeln('3. 具体讨论内容（按照时间顺序或主题逻辑组织）');
+    prompt.writeln('4. 会议结论和后续行动项（如果有）');
+
+    prompt.writeln('\n要求：');
+    prompt.writeln('- 保持客观准确，使用正式的语言风格');
+    prompt.writeln('- 突出重要信息，去除冗余内容');
+    prompt.writeln('- 保持条理清晰，结构完整');
+
+    return prompt.toString();
+  }
+
+  String _removeThinkTags(String content) {
+    // 使用正则表达式移除<think>标签及其内容
+    final regex = RegExp(r'<think>.*?</think>', dotAll: true);
+    return content.replaceAll(regex, '').trim();
   }
 
   @override
