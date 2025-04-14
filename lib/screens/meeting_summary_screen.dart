@@ -160,8 +160,8 @@ class _MeetingSummaryScreenState extends State<MeetingSummaryScreen> {
                 children: [
                   if (widget.audioPath != null)
                     Container(
-                      margin: const EdgeInsets.only(bottom: 16.0),
-                      padding: const EdgeInsets.all(8.0),
+                      margin: const EdgeInsets.only(bottom: 8.0),
+                      padding: const EdgeInsets.all(4.0),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surfaceVariant,
                         borderRadius: BorderRadius.circular(8.0),
@@ -205,7 +205,32 @@ class _MeetingSummaryScreenState extends State<MeetingSummaryScreen> {
     }
 
     if (_errorMessage != null) {
-      return Text(_errorMessage!, style: const TextStyle(color: Colors.red));
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 14.0),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.errorContainer.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(6.0),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.info_outline,
+              size: 18,
+              color: Theme.of(context).colorScheme.error.withOpacity(0.7),
+            ),
+            const SizedBox(width: 8.0),
+            Expanded(
+              child: Text(
+                _errorMessage!,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color:
+                          Theme.of(context).colorScheme.error.withOpacity(0.7),
+                    ),
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     return Row(
