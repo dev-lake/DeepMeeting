@@ -6,6 +6,8 @@ import 'meeting_form_screen.dart';
 import 'dart:async';
 import '../widgets/loading_overlay.dart';
 import '../services/xf_service.dart';
+import '../services/whisper_asr_service.dart'; // Added import for WhisperAsrService
+import '../config/api_config.dart'; // Added import for APIConfig
 import '../services/deepseek_service.dart';
 import '../models/meeting.dart';
 
@@ -191,8 +193,13 @@ class _RecordingScreenState extends State<RecordingScreen> {
         progress: 0.3,
       );
 
-      // 调用讯飞语音转写API
-      final text = await XFService().convertAudioToText(audioPath);
+      // 调用选择的语音转写API
+      String text;
+      if (APIConfig.asrServiceProvider == 'Whisper') {
+        text = await WhisperAsrService().convertAudioToText(audioPath);
+      } else { // Default to XF or handle other cases
+        text = await XFService().convertAudioToText(audioPath);
+      }
 
       // 创建会议对象并保存转录原文
       final meeting = Meeting();
@@ -243,6 +250,15 @@ class _RecordingScreenState extends State<RecordingScreen> {
       }
     } catch (e) {
       // 错误处理...
+      // Ensure LoadingOverlay is hidden on error
+      LoadingOverlay.hide();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('处理录音失败: $e')),
+        );
+      }
+      // Optionally, rethrow the error if it needs to be handled further up the call stack
+      // throw;
     }
   }
 

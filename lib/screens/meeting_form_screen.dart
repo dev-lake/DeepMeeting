@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../services/xf_service.dart';
+import '../services/whisper_asr_service.dart'; // Added import for WhisperAsrService
+import '../config/api_config.dart'; // Added import for APIConfig
 import '../services/deepseek_service.dart';
 import '../models/meeting.dart';
 import 'meeting_summary_screen.dart';
@@ -431,8 +433,13 @@ class _MeetingFormScreenState extends State<MeetingFormScreen> {
         progress: 0.3,
       );
 
-      // 调用讯飞语音转写API
-      final text = await XFService().convertAudioToText(_audioPath!);
+      // 调用选择的语音转写API
+      String text;
+      if (APIConfig.asrServiceProvider == 'Whisper') {
+        text = await WhisperAsrService().convertAudioToText(_audioPath!);
+      } else { // Default to XF or handle other cases
+        text = await XFService().convertAudioToText(_audioPath!);
+      }
 
       // 保存转录原文
       _meeting.transcription = text;
@@ -495,6 +502,8 @@ class _MeetingFormScreenState extends State<MeetingFormScreen> {
           SnackBar(content: Text('处理失败: $e')),
         );
       }
+      // Optionally, rethrow the error if it needs to be handled further up the call stack
+      // throw;
     }
   }
 

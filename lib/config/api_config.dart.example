@@ -8,6 +8,17 @@ class APIConfig {
   static String aiModelName = '';
   static String aiApiKey = '';
 
+  // Whisper ASR Webservice
+  // Ensure you have a running instance of https://github.com/ahmetoner/whisper-asr-webservice
+  // or a compatible ASR service.
+  static String whisperAsrEndpoint = 'http://localhost:9000'; // Replace with your Whisper ASR endpoint
+  static String whisperAsrApiKey = ''; // Optional: API key if your Whisper ASR service requires one
+
+  // ASR Service Provider Selection
+  // Determines which ASR service to use. Can be 'XF' (Xunfei) or 'Whisper'.
+  // If 'Whisper' is selected, ensure 'whisperAsrEndpoint' is correctly configured.
+  static String asrServiceProvider = 'XF';
+
   // SharedPreferences 键名
   static const String _keyXfSTTUrl = 'xf_stt_url';
   static const String _keyXfAppId = 'xf_app_id';
@@ -15,6 +26,9 @@ class APIConfig {
   static const String _keyAiApiEndpoint = 'ai_api_endpoint';
   static const String _keyAiModelName = 'ai_model_name';
   static const String _keyAiApiKey = 'ai_api_key';
+  static const String _keyWhisperAsrEndpoint = 'whisper_asr_endpoint';
+  static const String _keyWhisperAsrApiKey = 'whisper_asr_api_key';
+  static const String _keyAsrServiceProvider = 'asr_service_provider';
 
   // 从 SharedPreferences 加载配置
   static Future<void> loadConfig() async {
@@ -26,6 +40,9 @@ class APIConfig {
     aiApiEndpoint = prefs.getString(_keyAiApiEndpoint) ?? aiApiEndpoint;
     aiModelName = prefs.getString(_keyAiModelName) ?? aiModelName;
     aiApiKey = prefs.getString(_keyAiApiKey) ?? aiApiKey;
+    whisperAsrEndpoint = prefs.getString(_keyWhisperAsrEndpoint) ?? whisperAsrEndpoint;
+    whisperAsrApiKey = prefs.getString(_keyWhisperAsrApiKey) ?? whisperAsrApiKey;
+    asrServiceProvider = prefs.getString(_keyAsrServiceProvider) ?? asrServiceProvider;
   }
 
   // 更新并保存配置
@@ -36,6 +53,9 @@ class APIConfig {
     String? aiApiEndpoint,
     String? aiModelName,
     String? aiApiKey,
+    String? whisperAsrEndpoint,
+    String? whisperAsrApiKey,
+    String? asrServiceProvider,
   }) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -62,6 +82,18 @@ class APIConfig {
     if (aiApiKey != null) {
       APIConfig.aiApiKey = aiApiKey;
       await prefs.setString(_keyAiApiKey, aiApiKey);
+    }
+    if (whisperAsrEndpoint != null) {
+      APIConfig.whisperAsrEndpoint = whisperAsrEndpoint;
+      await prefs.setString(_keyWhisperAsrEndpoint, whisperAsrEndpoint);
+    }
+    if (whisperAsrApiKey != null) {
+      APIConfig.whisperAsrApiKey = whisperAsrApiKey;
+      await prefs.setString(_keyWhisperAsrApiKey, whisperAsrApiKey);
+    }
+    if (asrServiceProvider != null) {
+      APIConfig.asrServiceProvider = asrServiceProvider;
+      await prefs.setString(_keyAsrServiceProvider, asrServiceProvider);
     }
   }
 }
